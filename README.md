@@ -4,7 +4,7 @@ Projeto Integrador das disciplinas de Engenharia de Software, Banco de Dados I e
 O projeto será organizado em pastas separadas para as disciplinas envolvidas, cada uma com suas respectivas documentação e códigos necessários.
 # Engenharia De Software 
 Contém os arquivos relacionados a todo o planejamento da aplicação, requisitos, diagrama de casos de uso etc.
-# Banco de dados I 
+# Banco de dados I ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
 Contém os arquivos relacionados a todo o projeto do banco de dados, modelagem conceitual, modelagem lógica etc.
 # Programação II 
 Contém toda a parte de código (front e back) da aplicação juntamente com informações sobre as tecnologias usadas.
