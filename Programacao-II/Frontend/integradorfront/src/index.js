@@ -11,32 +11,57 @@ import ErrorPage from './Components/ErrorPage';
 import CadastroMed from './Components/CadastroMed';
 import CadastroAnimal from './Components/CadastroAnimal';
 import CadastroEvents from './Components/CadastroEvents'
+import TelaLogin from './Components/TelaLogin';
+import ListagemItens from './Components/ListagemMedicamentos';
+import ListAnimals from './Components/ListaNimal';
+import ProtectedRoute from './Components/PrivateRoute';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+function IsLogged(params) {
+  return localStorage.getItem("token");
+}
+
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Dashboard></Dashboard>,
+    element: <ProtectedRoute element={Dashboard}></ProtectedRoute>,
     errorElement: <ErrorPage></ErrorPage>,
   },
   {
     path: "/Cadastromedicamento",
-    element: <CadastroMed></CadastroMed>
+    element: <ProtectedRoute element={CadastroMed}></ProtectedRoute>
   },
   {
     path: "/Cadastroanimal",
-    element: <CadastroAnimal></CadastroAnimal>
+    element: <ProtectedRoute element={CadastroAnimal}></ProtectedRoute>
   },
   {
     path: "/Cadastroevento",
-    element: <CadastroEvents></CadastroEvents>
+    element: <ProtectedRoute element={CadastroEvents}></ProtectedRoute>
+  },
+  {
+    path: "/Login",
+    element: <TelaLogin></TelaLogin>
+  },
+  {
+    path: "/Teste",
+    element: <ListagemItens></ListagemItens>
+  },
+  {
+    path: "/ListagemAnimais",
+    element: <ListAnimals></ListAnimals>
   }
 ]);
 
+const queryClient = new QueryClient();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router}></RouterProvider>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router}></RouterProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );
 

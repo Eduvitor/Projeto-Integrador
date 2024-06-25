@@ -1,12 +1,10 @@
 import { FaRegUserCircle } from "react-icons/fa"; //Botao do user
 import { AiOutlineGlobal } from "react-icons/ai"; //Globo
-import { FaPen } from "react-icons/fa"; //item para editar algo
 import { FaEye } from "react-icons/fa"; //Icone para botao de listar algo
 import { FaFileMedical } from "react-icons/fa"; //Icone para botao de add medicamento
 import { IoMdAdd } from "react-icons/io"; //icone de mais para adicionar animal
 import { FaCalendar } from "react-icons/fa"; //icone de calendario
 import { FaCalendarTimes } from "react-icons/fa"; //icone para remover evento n vai ficar aqui ira para o read de eventos
-import { FaTrash } from "react-icons/fa"; //lixeira
 import { FaBriefcaseMedical } from "react-icons/fa";
 import { FaCalendarPlus } from "react-icons/fa";
 import { FaSlidersH } from "react-icons/fa";
@@ -16,7 +14,8 @@ import { GrConfigure } from "react-icons/gr"; //icone config
 import { ImExit } from "react-icons/im"; //icone de sair
 import { Outlet, Link } from "react-router-dom";
 import { FiSun } from "react-icons/fi";
-
+import logo from "./LogoSistema-Photoroom.png";
+import ListAnimals from "./ListaNimal";
 
 function Dashboard() {
   const [width, setWidth] = useState(320); // Largura inicial
@@ -65,25 +64,42 @@ function Dashboard() {
     };
   }, [open]);
 
+  //Controle da exibição do menu lateral em telas pequenas
+
+  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
+
+  //Troca o estado da sidebar
+
+  const toggleSidebar = () => {
+    setIsSideBarOpen(!isSideBarOpen);
+  };
+
   return (
     <div className="h-screen flex flex-col">
       <div className="flex flex-1">
-        <aside
-          className="w-80 h-screen bg-blue-600 text-gray-50 p-6"
-          style={{ width: width }}
+        <button
+          className="md:hidden p-4 text-white bg-blue-600 font-semibold text-lg"
+          onClick={toggleSidebar}
         >
-          <nav className="space-y-5 space-x-4">
+          MENU
+        </button>
+        <aside
+          className={`fixed inset-y-0 left-0 z-50 transform md:transform-none md:relative md:translate-x-0 transition-transform duration-300 ease-in-out bg-blue-600 text-gray-50 p-6 ${
+            isSideBarOpen ? "translate-x-0" : "-translate-x-full"
+          } lg:translate-x-0`}
+          style={{ width: isSideBarOpen ? "65%" : width }}
+        >
+          <nav className="space-y-4 space-x-4">
             <div className="pb-8 flex items-center gap-6 font-semibold text-lg">
               <FaSlidersH></FaSlidersH>
               Selecionar Acao
             </div>
-            <a
-              href=""
+            <Link to={'ListagemAnimais'}
               className="flex items-center gap-6 font-semibold text-lg hover:bg-blue-400 rounded transform transition-transform duration-300 hover:scale-110"
             >
               <FaEye></FaEye>
               Listar Animais
-            </a>
+            </Link>
             <a
               href=""
               className="flex items-center gap-6 font-semibold text-lg hover:bg-blue-500 rounded transform transition-transform duration-300 hover:scale-110"
@@ -98,44 +114,52 @@ function Dashboard() {
               <FaCalendar></FaCalendar>
               Listar Eventos
             </a>
-            <a
+            <Link to={'/Cadastromedicamento'}
               href=""
               className="flex items-center gap-6 font-semibold text-lg hover:bg-blue-500 rounded transform transition-transform duration-300 hover:scale-110"
             >
               <IoMdAdd></IoMdAdd>
               Adicionar Animal
-            </a>
-            <Link to={'Cadastromedicamento/'}
+            </Link>
+            <Link
+              to={"Cadastromedicamento/"}
               className="flex items-center gap-6 font-semibold text-lg hover:bg-blue-500 rounded transform transition-transform duration-300 hover:scale-110"
             >
               <FaBriefcaseMedical />
               Adicionar Medicamento
             </Link>
-            <a
-              href=""
+            <Link
+              to={"Cadastroevento/"}
               className="flex items-center gap-6 font-semibold text-lg hover:bg-blue-500 rounded transform transition-transform duration-300 hover:scale-110"
             >
               <FaCalendarPlus></FaCalendarPlus>
               Adicionar Evento
-            </a>
+            </Link>
+            <img src={logo} alt="LOGO DO SISTEMA SGPR"></img>
           </nav>
         </aside>
+        {isSideBarOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black opacity-50 lg:hidden"
+            onClick={toggleSidebar}
+          ></div>
+        )}
         <div
           className="w-1 cursor-col-resize bg-gray-400"
           onMouseDown={handleMouseDown}
         ></div>
-        <main className="bg-blue-100 w-screen flex flex-row justify-between ">
-          <div className="h-20 w-full flex flex-row items-center justify-end md:px-10">
+        <main className="bg-blue-100 w-screen flex flex-row md:justify-between justify-start">
+          <div className="h-20 w-full flex flex-row items-center md:justify-end md:px-10 justify-center gap-5">
             <Barrapesquisa></Barrapesquisa>
             <button>
               {
-                <AiOutlineGlobal className="h-10 md:w-20 sm:w-10 rounded transform transition-transform duration-300 hover:scale-110"></AiOutlineGlobal>
+                <AiOutlineGlobal className="h-20 w-10 md:h-28 md:w-18 rounded transform transition-transform duration-300 hover:scale-110"></AiOutlineGlobal>
               }
             </button>
             <div className="relative">
               <button onClick={() => setOpen(!open)}>
                 {
-                  <FaRegUserCircle className="h-10 md:w-20 sm:10 rounded transform transition-transform duration-300 hover:scale-110"></FaRegUserCircle>
+                  <FaRegUserCircle className="h-20 w-10 md:h-28 md:w-18 rounded transform transition-transform duration-300 hover:scale-110"></FaRegUserCircle>
                 }
               </button>
               {open && (
@@ -150,19 +174,17 @@ function Dashboard() {
                     <GrConfigure></GrConfigure>
                     Configurações
                   </a>
-                  <button
-                    className="flex items-center gap-3 font-semibold text-lg transform transition-transform duration-300 hover:scale-105"
-                  >
+                  <button className="flex items-center gap-3 font-semibold text-lg transform transition-transform duration-300 hover:scale-105">
                     <FiSun></FiSun>
                     Trocar tema
                   </button>
-                  <a
-                    href=""
+                  <Link 
+                    to={"/Login"}
                     className="flex items-center gap-3 font-semibold text-lg transform transition-transform duration-300 hover:scale-105"
                   >
                     <ImExit></ImExit>
                     Sair
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
