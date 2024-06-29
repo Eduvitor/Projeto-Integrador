@@ -1,7 +1,7 @@
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { Link } from "react-router-dom";
 import logo from "./LogoSistema-Photoroom.png";
-import { useForm } from 'react-hook-form';
+import { useForm } from "react-hook-form";
 import { FaPen } from "react-icons/fa"; //item para editar algo
 import { useState, useEffect } from "react";
 import { FaTrash } from "react-icons/fa"; //lixeira
@@ -9,14 +9,11 @@ import {
   useQuery,
   useQueryClient,
   QueryClient,
-  QueryClientProvider
-} from '@tanstack/react-query'
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import axios from "axios";
 
-
-
 function ListAnimals() {
-  
   console.log("COMECOU!!!");
 
   const animais = async () => {
@@ -26,13 +23,20 @@ function ListAnimals() {
     return response.data;
   };
 
-  const { data: animals, error, isLoading } = useQuery({
+  const {
+    data: animals,
+    error,
+    isLoading,
+  } = useQuery({
     queryKey: ["AnimaisReturn"],
-    queryFn: animais
+    queryFn: animais,
   });
+
+  const [hoveredID, setHoveredID] = useState(null);
+
   console.log(animals);
-    if(isLoading) return <div>Carregando dados!</div>
-    if(error) return <div>Ocorreu um erro na requisicao!</div>
+  if (isLoading) return <div>Carregando dados!</div>;
+  if (error) return <div>Ocorreu um erro na requisicao!</div>;
 
   return (
     <div>
@@ -55,22 +59,69 @@ function ListAnimals() {
           </Link>
         </div>
       </div>
-      <div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 bg-gray-200">
-          {animals?.map(item => 
-            <div key={item.aid} className="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-30">
-              <h2 className="text-xl font-semibold mb-2">{item.araca}</h2>
-              <p className="text-gray-700">{item.apeso}</p>
-              <p className="text-gray-700">{item.acolor}</p>
-              <p className="text-gray-700">{item.health_problem}</p>
-              <p className="text-gray-700">{item.b_number}</p>
+      <div className="p-6 bg-gray-200">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {animals?.map((item) => (
+            <div
+              key={item.aid}
+              className="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
+              onMouseEnter={() => setHoveredID(item.aid)}
+              onMouseLeave={() => setHoveredID(null)}
+            >
+              <div className="mb-2">
+                <h2 className="text-black font-semibold text-lg">
+                  Peso do animal:
+                </h2>
+                <p className="text-gray-700 text-base">{item.apeso} KG</p>
+              </div>
+              <div className="mb-2">
+                <h2 className="text-black font-semibold text-lg">
+                  Coloração do animal:
+                </h2>
+                <p className="text-gray-700 text-base">{item.acolor}</p>
+              </div>
+              <div className="mb-2">
+                <h2 className="text-black font-semibold text-lg">
+                  Problema de saúde:
+                </h2>
+                <p className="text-gray-700 text-base">
+                  {item.health_problem || "Não possui"}
+                </p>
+              </div>
+              <div className="mb-2">
+                <h2 className="text-black font-semibold text-lg">Brinco:</h2>
+                <p className="text-gray-700 text-base">
+                  {item.b_number || "Não possui"}
+                </p>
+              </div>
+              <div className="mb-2">
+                <h2 className="text-black font-semibold text-lg">
+                  Estado de produção:
+                </h2>
+                <p className="text-gray-700 text-base">{item.prodstate}</p>
+              </div>
+              <div className="mb-2">
+                <h2 className="text-black font-semibold text-lg">
+                  Apelido do animal:
+                </h2>
+                <p className="text-gray-700 text-base">{item.apelido}</p>
+              </div>
+              {hoveredID && (
+                <div className="bottom-2 right-2 flex space-x-2 justify-end">
+                  <button className="text-blue-500 hover:text-blue-700">
+                    <FaPen />
+                  </button>
+                  <button className="text-red-500 hover:text-red-700">
+                    <FaTrash />
+                  </button>
+                </div>
+              )}
             </div>
-          )}
+          ))}
         </div>
       </div>
     </div>
-  )
-};
-
+  );
+}
 
 export default ListAnimals;

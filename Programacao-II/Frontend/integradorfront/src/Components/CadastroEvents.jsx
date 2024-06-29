@@ -11,7 +11,7 @@ function CadastroEvents(params) {
         </div>
         <div className="flex  justify-start md:justify-center">
           <h2 className="font-semibold text-xs md:text-xl">
-            ADICIONAR UM NOVO MEDICAMENTO
+            ADICIONAR UM NOVO EVENTO
           </h2>
         </div>
         <div className="flex justify-start md:justify-end px-4">
@@ -35,13 +35,13 @@ function CadastroEvents(params) {
                 className="block text-gray-700 text-sm font-semibold mb-2"
                 htmlFor="nome1"
               >
-                Nome do medicamento
+                Nome do evento
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl"
                 id="nome1"
                 type="text"
-                placeholder="Ex: Anabolic"
+                placeholder="Ex: Coleta de exames"
               />
             </div>
 
@@ -50,53 +50,38 @@ function CadastroEvents(params) {
                 className="block text-gray-700 text-sm font-semibold mb-2"
                 htmlFor="nome2"
               >
-                Dosagem recomendado por KG
+                Local do evento 
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-s md:text-xl"
                 id="nome2"
                 type="text"
-                placeholder="Ex: 4ml/kg"
+                placeholder="Ex: Propiedade 1"
               />
             </div>
+          </div>
 
-            <div>
+          <div className="">
               <label
                 className="block text-gray-700 text-sm font-semibold mb-2"
                 htmlFor="nome3"
               >
-                Dias de carência (se possuir)
+                Descrição do evento
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl"
                 id="nome3"
                 type="text"
-                placeholder="Ex: 5"
+                placeholder="Ex: Fazer algo amanha"
               />
             </div>
-
-            <div>
-              <label
-                className="block text-gray-700 text-sm font-semibold mb-2"
-                htmlFor="nome4"
-              >
-                Tipo de carência
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl"
-                id="nome4"
-                type="text"
-                placeholder="Ex: Consumo"
-              />
-            </div>
-          </div>
 
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-semibold mb-2"
               htmlFor="data"
             >
-              Data de vencimento
+              Data que irá ocorrer
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl"
@@ -105,24 +90,6 @@ function CadastroEvents(params) {
               placeholder="Selecione a data"
             />
           </div>
-
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-semibold mb-2"
-              htmlFor="opcoes"
-            >
-              Selecione uma categoria:
-            </label>
-            <select
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl"
-              id="opcoes"
-            >
-              <option>Opção 1</option>
-              <option>Opção 2</option>
-              <option>Opção 3</option>
-            </select>
-          </div>
-
           <div className="flex items-center justify-between">
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
