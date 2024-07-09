@@ -16,10 +16,11 @@ import ListagemItens from './Components/ListagemMedicamentos';
 import ListAnimals from './Components/ListaNimal';
 import ProtectedRoute from './Components/PrivateRoute';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-function IsLogged(params) {
-  return localStorage.getItem("token");
-}
+
+
 
 
 const router = createBrowserRouter([
@@ -50,7 +51,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/ListagemAnimais",
-    element: <ListAnimals></ListAnimals>
+    element: <ProtectedRoute element={ListAnimals}></ProtectedRoute>
   }
 ]);
 
@@ -61,6 +62,7 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router}></RouterProvider>
+      <ToastContainer></ToastContainer>
     </QueryClientProvider>
   </React.StrictMode>
 );

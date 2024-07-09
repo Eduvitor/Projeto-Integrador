@@ -1,18 +1,68 @@
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { Link } from "react-router-dom";
 import logo from "./LogoSistema-Photoroom.png";
-import { useForm } from 'react-hook-form';
-
-
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import {
+  useQuery,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 function CadastroMed() {
 
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const token = localStorage.getItem("token");
 
-  const onSubmit = (data) => {
-      console.log(data);
-  }
-  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = async (data) => {
+    console.log(data);
+    try {
+      const response = await axios.post("http://localhost:3301/Addmedicamento", {
+       ...data},
+       {
+         headers: {
+           Authorization: `bearer ${token}`,
+         },
+       }
+      ); 
+      if (response.status == 200) {
+        toast.success("Medicamento adicionado com sucesso!");
+      } else {
+        toast.error("Ocorreu um erro ao adicionar o medicamento!");
+      }
+      return response.data;
+    } 
+      catch (error) {
+        toast.error("ocorreu um erro!");
+   }
+  };
+
+  const cat = async () => {
+    const response = await axios.get("http://localhost:3301/categorias", {
+      headers: {
+        Authorization: `bearer ${token}`,
+      },
+    });
+    //console.log(response)
+    return response.data;
+  };
+
+  const {
+    data: category,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["CatReturn"],
+    queryFn: cat,
+  });
+
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-3 md:h-44 h-48 gap-4 justify-center items-center bg-blue-500 text-gray-50">
@@ -45,16 +95,22 @@ function CadastroMed() {
                 className="block text-gray-700 text-sm font-semibold mb-2"
                 htmlFor="nome1"
               >
-                Nome do medicamento
+                Nome do medicamento*
               </label>
               <input
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl ${errors.nmed ? 'border-red-500' : ''} }`}
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl ${
+                  errors.nmed ? "border-red-500" : ""
+                } }`}
                 id="nome1"
                 type="text"
                 placeholder="Ex: Anabolic"
-                {...register('nmed', {required: true})}
+                {...register("nmed", { required: true })}
               />
-              { errors?.nmed?.type === 'required' && <p className="text-xs text-red-600">Por Favor preencha este campo</p>}
+              {errors?.nmed?.type === "required" && (
+                <p className="text-xs text-red-600">
+                  Por Favor preencha este campo
+                </p>
+              )}
             </div>
 
             <div>
@@ -69,7 +125,39 @@ function CadastroMed() {
                 id="nome2"
                 type="text"
                 placeholder="Ex: 4ml/kg"
-                {...register('dos')}
+                {...register("dos")}
+              />
+            </div>
+
+            <div>
+              <label
+                className="block text-gray-700 text-sm font-semibold mb-2"
+                htmlFor="nome2"
+              >
+                Efeitos colaterias
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-s md:text-xl"
+                id="nome2"
+                type="text"
+                placeholder="Ex: Rigidez"
+                {...register("coleffect")}
+              />
+            </div>
+
+            <div>
+              <label
+                className="block text-gray-700 text-sm font-semibold mb-2"
+                htmlFor="nome2"
+              >
+                Quantidade armazenada
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-s md:text-xl"
+                id="nome2"
+                type="text"
+                placeholder="Ex: 2"
+                {...register("qnt")}
               />
             </div>
 
@@ -85,7 +173,7 @@ function CadastroMed() {
                 id="nome3"
                 type="text"
                 placeholder="Ex: 5"
-                {...register('daycar')}
+                {...register("daycar")}
               />
             </div>
 
@@ -101,7 +189,7 @@ function CadastroMed() {
                 id="nome4"
                 type="text"
                 placeholder="Ex: Consumo"
-                {...register('typec')}
+                {...register("typec")}
               />
             </div>
           </div>
@@ -111,16 +199,22 @@ function CadastroMed() {
               className="block text-gray-700 text-sm font-semibold mb-2"
               htmlFor="data"
             >
-              Data de vencimento
+              Data de vencimento*
             </label>
             <input
-              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl ${errors.datavenc ? 'border-red-500' : ''} }`}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl ${
+                errors.datavenc ? "border-red-500" : ""
+              } }`}
               id="data"
               type="date"
               placeholder="Selecione a data"
-              {...register('datavenc', { required: true })}
+              {...register("datavenc", { required: true })}
             />
-            { errors?.datavenc?.type === 'required' && <p className="text-xs text-red-600">Por Favor preencha este campo</p>}
+            {errors?.datavenc?.type === "required" && (
+              <p className="text-xs text-red-600">
+                Por Favor preencha este campo
+              </p>
+            )}
           </div>
 
           <div className="mb-4">
@@ -131,15 +225,19 @@ function CadastroMed() {
               Selecione uma categoria:
             </label>
             <select
-            {...register('catmed', { required: true })}
+              {...register("catmed", { required: true })}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl"
               id="opcoes"
             >
-              <option>Opção 1</option>
-              <option>Opção 2</option>
-              <option>Opção 3</option>
+              {category?.map((item) => (
+                <option key={item.catid} value={item.catid}>{item.typemed}</option>
+              ))} 
             </select>
-            { errors?.catmed?.type === 'required' && <p className="text-xs text-red-600">Por Favor preencha este campo</p>}
+            {errors?.catmed?.type === "required" && (
+              <p className="text-xs text-red-600">
+                Por Favor preencha este campo
+              </p>
+            )}
           </div>
 
           <div className="flex items-center justify-between">
@@ -150,12 +248,12 @@ function CadastroMed() {
             >
               Enviar
             </button>
-            <button
+            <Link to={'/'}
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
             >
               Cancelar
-            </button>
+            </Link>
           </div>
         </form>
       </div>

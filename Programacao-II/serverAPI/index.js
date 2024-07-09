@@ -180,7 +180,7 @@ app.post("/Logout", (req, res, next) => {
 });
 
 //Rota para pegar os animais cadastrados no banco
-app.get("/Animais", async (req, res) => {
+  app.get("/Animais", requireJWTAuth, async (req, res) => {
   try {
     const animais = await db.many(
       "SELECT * FROM tanimal;"
@@ -190,39 +190,238 @@ app.get("/Animais", async (req, res) => {
     console.log(error);
     res.sendStatus(400);
   }
-  
-  
 });
 
+app.get("/animalId:id", requireJWTAuth, async (req, res) => {
+  try {
+    const idA = req.params.id;
+    const Animal = await db.one(
+      "SELECT * FROM tanimal t JOIN tmedused m ON t.aid=m.aid JOIN tmedicine me ON m.idmed=me.idmed WHERE t.aid=$1", [idA]
+    );
+    res.json(Animal).status(200);
+  } catch (error) {
+    console.log("An error has ocurred!", error);
+    res.send(500);
+  }
+});
+
+
+app.delete("/Delanimal:id", requireJWTAuth, async (req, res) => {
+  const animalId = req.params.id;
+  console.log(animalId)
+  
+  try {
+    await db.tx(async t => {
+      //Exclui na tabela de registros de medicamentos usados 
+      await t.none('DELETE FROM tmedused where aid = $1', [animalId]);
+      await t.none('DELETE FROM tanimal WHERE aid = $1', [animalId]);
+    });
+    res.status(200).json({ message: "Animal excluido com sucesso!" });
+  } catch (error) {
+    res.status(500).json({error: "Erro ao excluir o animal!"});
+  }
+});
+
+//Rota para atualizar um animal
+
+app.put("/Attanimal:id", requireJWTAuth, async (req, res)=>{
+  console.log("TESTE")
+  try {
+    const id = req.params.id;
+    const {
+      animalrace,
+      pesoanimal,
+      animal_color,
+      animalhproblem,
+      animal_brinco,
+      prodstate,
+      animal,
+      idState,
+      datamed,
+      dosused,
+      catmed
+    } = req.body;
+    console.log("Testando", animal_brinco, animal, pesoanimal);
+    await db.tx(async t => {
+      const animalPut = `UPDATE tanimal SET araca=$1, apeso=$2, acolor=$3, health_problem=$4, b_number=$5, prodstate=$6, apelido=$7 WHERE aid=$9 RETURNING aid`
+
+      const animalAtt = [animalrace, pesoanimal, animal_color, animalhproblem, animal_brinco, prodstate, animal, idState, id];
+      const animalResult = await t.one(animalPut, animalAtt); 
+
+      if (datamed && catmed) {
+
+        const MedUsed = [animalResult.aid, catmed, dosused];
+        const testeTem =  `SELECT * FROM tmedused WHERE aid=$1 and idmed=$2`;
+
+        const medexists = await t.oneOrNone(testeTem, [animalResult.aid, catmed]);
+
+        if (medexists) {
+          const updateMedQuery = `UPDATE tmedused SET dataMed=$1, dosagem=$2 WHERE aid=$3 and idmed=$4`;
+          await t.none(updateMedQuery, [datamed, dosused, animalResult.aid, catmed]);
+        } else {
+          const insertMedQuery = `INSERT INTO tmedused (aid, idmed, dataMed, dosagem) VALUES ($1, $2, $3, $4)`;
+          await t.none(insertMedQuery, [animalResult.aid, catmed, datamed, dosused]);
+        }
+      }
+    });
+    res.status(200).json({message: "Animal atualizado com sucesso!"});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "Erro ao atualizar o animal!"});
+  }
+});
+
+//Rota para pegar o id e nome dos medicamentos
+app.get("/IdAndNameMEDS", requireJWTAuth, async (req, res) => {
+  try {
+    const resMed = await db.many(
+      "SELECT idmed, name_med FROM tmedicine;"
+    );
+    res.json(resMed).status(200);
+  } catch (error) {
+    console.log("An error has ocurred", error);
+    res.sendStatus(400);
+  }
+});
+
+//Rota para pegar os medicamentos usados
+
+app.get("/MedUsed:aid", requireJWTAuth,  async (req, res) => {
+  try {
+    const dadosUsed = await db.many(
+      "SELECT * FROM tmedused where aid = $1;"
+    );
+    res.json(dadosUsed).status(200);
+  } catch (error) {
+    console.log("An error has ocurred", error);
+    res.sendStatus(400);
+  }
+});
+
+
+//Rota para pegar as categorias
+
+app.get("/categorias", requireJWTAuth, async (req, res) => {
+  try {
+    console.log("porra");
+    const  cat = await db.many(
+      "SELECT catid, typemed FROM tcategorymed;"
+    );
+    console.log(cat);
+    res.json(cat).status(200);
+  } catch (error) {
+    console.log(error);
+    res.status(400);
+  }
+});
+
+//Rota para pegar os estados dos animais
+
+app.get("/States", requireJWTAuth, async (req, res) => {
+  try {
+    const states = await db.many(
+      "SELECT estado, idSaude FROM tstateSaude;"
+    );
+    res.json(states).status(200);
+  } catch (error) {
+    res.json(error).status(400);
+  }
+});
+
+
+//Rota para pegar os dados do grafico
+
+app.get("/Grafico1", requireJWTAuth, async (req, res) => {
+  try {
+    const dados = await db.many(
+      "SELECT data_added, COUNT(*) AS num_animal FROM tanimal GROUP BY data_added ORDER BY data_added;" //Seleciona e conta os animais cadastrados no sistema
+    );
+    res.json(dados).status(200);
+  } catch (error) {
+    res.status(400);
+    console.log(error);
+  }
+});
+
+
 //Rota para retornar os medicamentos cadastrados
-app.get("/Medicamentos", (req, res) => {});
+app.get("/Medicamentos", requireJWTAuth, (req, res) => {});
 
 //Rota para retornar os eventos cadastrados
-app.get("/Eventos", (req, res) => {});
+app.get("/Eventos", requireJWTAuth, (req, res) => {});
 
 //Rota para pegar os dados de peso dos animais
-app.get("/Mediapesos", (req, res) => {});
+app.get("/Mediapesos", requireJWTAuth, (req, res) => {});
 
 //Rota para adicionar animais 
 
-app.post("/Addanimal", (req, res)=> {
+app.post("/Addanimal", requireJWTAuth, async (req, res)=> {
   try {
-    const araca = req.body.raca;
-    const apeso = req.body.peso;
-    const acolor = req.body.cor;
-    const healt_problem = req.body.problema_saude;
+    const araca = req.body.animalrace;
+    const apeso = req.body.pesoanimal;
+    const acolor = req.body.animal_color;
+    const healt_problem = req.body.animalhproblem;
     const b_number = req.body.num_brinco || null;
-    const prodstate = req.body.estado_producao;
-    const apelido = req.body.apelido || null;
-    const data_added = req.body.data_adicao ;
-    db.none(
-      "INSERT INTO tanimal (araca, apeso, acolor, health_problem, b_number, prodstate, apelido, data_added) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-      [ araca, apeso, acolor, healt_problem, b_number, prodstate, apelido, data_added ]
-    );
-    res.sendStatus(200);
+    const prodstate = req.body.prodstate || null;
+    const idstate = req.body.idState;
+   //onst data_added = "11-11-1928"; c
+    const apelido = req.body.animal || null;
+    const data_med = req.body.datamed || null;
+    const dosgem = req.body.dosused || null;
+    const idmed = req.body.catmed || null;
+
+    console.log(idmed);
+
+      await db.tx(async t => {
+        const animalQuery = `INSERT INTO tanimal (araca, apeso, acolor, health_problem, b_number, prodstate, apelido, idstate) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+        RETURNING aid
+        `;
+        
+        const animalValues = [araca, apeso, acolor, healt_problem, b_number, prodstate, apelido, idstate];
+        const animalResult = await t.one(animalQuery, animalValues);
+
+        if (data_med && idmed) {
+
+          const medUsedQuery = `
+            INSERT INTO tmedused (aid, idmed, dataMed, dosagem)
+            VALUES ($1, $2, $3, $4)
+          `;
+          const medUsedValues = [animalResult.aid, idmed, data_med, dosgem ]
+          await t.none(medUsedQuery, medUsedValues);
+        }
+      });
+    res.status(200).json( { message: "Animal adicionado com success!" } );
     console.log(req.body);
   } catch (error) {
-    console.log(error);
-    res.send(400).json( {erro: error} );
+    //console.log(error);
+    res.status(400).json( {erro: error} );
   };
+});
+
+//Rota de post para medicamentos
+
+app.post("/Addmedicamento", requireJWTAuth, async (req, res) => {
+  try {
+    console.log(req.body);
+    const catmed = req.body.catmed;
+    const nomemed = req.body.nmed;
+    const daycar = req.body.daycar || null;
+    const col_effect = req.body.coleeffect || null;
+    const dose = req.body.dos || null;
+    const date = req.body.datavenc;
+    const typec = req.body.typec || null;
+    const qnt = req.body.qnt || null;
+
+    await db.tx(async t => {
+      const animalQuery = `INSERT INTO tmedicine (name_med, dose_kg, venc_day, days_car, type_car, col_effect, qnt, catID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
+
+      const animalValues = [nomemed, dose, date, daycar, typec, col_effect, qnt, catmed];
+      await t.none(animalQuery, animalValues);
+    });
+    res.status(200).json({message: "Medicamento cadastrado com sucesso!"});
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({message: "Não foi possivel adicionar o Medicamento", erro: error});
+  }
 });

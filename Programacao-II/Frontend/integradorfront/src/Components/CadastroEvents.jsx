@@ -1,8 +1,22 @@
 import { Link, useRouteError } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import logo from "./LogoSistema-Photoroom.png";
+import { useForm } from "react-hook-form";
+import axios from "axios";
+
 
 function CadastroEvents(params) {
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-3 md:h-44 h-48 gap-4 justify-center items-center bg-blue-500 text-gray-50">
@@ -38,11 +52,19 @@ function CadastroEvents(params) {
                 Nome do evento
               </label>
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl"
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl ${
+                  errors.namevent ? "border-red-500" : ""
+                } }`}
                 id="nome1"
                 type="text"
                 placeholder="Ex: Coleta de exames"
+                {...register("namevent", { required: true })}
               />
+              {errors?.namevent?.type === "required" && (
+              <p className="text-xs text-red-600">
+                Por Favor preencha este campo
+              </p>
+            )}
             </div>
 
             <div>
@@ -57,8 +79,55 @@ function CadastroEvents(params) {
                 id="nome2"
                 type="text"
                 placeholder="Ex: Propiedade 1"
+                {...register("eventlocal")}
               />
             </div>
+
+            <div>
+              <label
+                className="block text-gray-700 text-sm font-semibold mb-2"
+                htmlFor="nome2"
+              >
+                Hora de inicio 
+              </label>
+              <input
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl ${
+                  errors.hrinit ? "border-red-500" : ""
+                } }`}
+                id="hrinit"
+                type="time"
+                {...register("hrinit", { required: true })}
+              />
+              {errors?.hrinit?.type === "required" && (
+              <p className="text-xs text-red-600">
+                Por Favor preencha este campo
+              </p>
+            )}
+            </div>
+
+
+            <div>
+              <label
+                className="block text-gray-700 text-sm font-semibold mb-2"
+                htmlFor="nome2"
+              >
+                Hora do termino 
+              </label>
+              <input
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl ${
+                  errors.hrend ? "border-red-500" : ""
+                } }`}
+                id="hrter"
+                type="time"
+                {...register("hrend", { required: true })}
+              />
+              {errors?.hrend?.type === "required" && (
+              <p className="text-xs text-red-600">
+                Por Favor preencha este campo
+              </p>
+            )}
+            </div>
+
           </div>
 
           <div className="">
@@ -73,6 +142,7 @@ function CadastroEvents(params) {
                 id="nome3"
                 type="text"
                 placeholder="Ex: Fazer algo amanha"
+                {...register("desc")}
               />
             </div>
 
@@ -84,16 +154,25 @@ function CadastroEvents(params) {
               Data que irá ocorrer
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl"
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl ${
+                errors.datevent ? "border-red-500" : ""
+              } }`}
               id="data"
               type="date"
               placeholder="Selecione a data"
+              {...register("datevent", { required: true })}
             />
+            {errors?.datevent?.type === "required" && (
+              <p className="text-xs text-red-600">
+                Por Favor preencha este campo
+              </p>
+            )}
           </div>
           <div className="flex items-center justify-between">
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
+              onClick={() => handleSubmit(onSubmit)()}
             >
               Enviar
             </button>

@@ -16,6 +16,9 @@ import { Outlet, Link } from "react-router-dom";
 import { FiSun } from "react-icons/fi";
 import logo from "./LogoSistema-Photoroom.png";
 import ListAnimals from "./ListaNimal";
+import Grafico1 from "./Grafico1";
+import axios from "axios";
+
 
 function Dashboard() {
   const [width, setWidth] = useState(320); // Largura inicial
@@ -74,6 +77,10 @@ function Dashboard() {
     setIsSideBarOpen(!isSideBarOpen);
   };
 
+  const logOut = () => {
+    localStorage.removeItem("token");
+  }
+
   return (
     <div className="h-screen flex flex-col">
       <div className="flex flex-1">
@@ -114,7 +121,7 @@ function Dashboard() {
               <FaCalendar></FaCalendar>
               Listar Eventos
             </a>
-            <Link to={'/Cadastromedicamento'}
+            <Link to={'Cadastroanimal'}
               href=""
               className="flex items-center gap-6 font-semibold text-lg hover:bg-blue-500 rounded transform transition-transform duration-300 hover:scale-110"
             >
@@ -149,6 +156,7 @@ function Dashboard() {
           onMouseDown={handleMouseDown}
         ></div>
         <main className="bg-blue-100 w-screen flex flex-row md:justify-between justify-start">
+          <Grafico1></Grafico1>
           <div className="h-20 w-full flex flex-row items-center md:justify-end md:px-10 justify-center gap-5">
             <Barrapesquisa></Barrapesquisa>
             <button>
@@ -181,6 +189,7 @@ function Dashboard() {
                   <Link 
                     to={"/Login"}
                     className="flex items-center gap-3 font-semibold text-lg transform transition-transform duration-300 hover:scale-105"
+                    onClick={()=>logOut()}
                   >
                     <ImExit></ImExit>
                     Sair

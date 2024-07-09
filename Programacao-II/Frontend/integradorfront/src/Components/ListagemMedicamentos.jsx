@@ -1,4 +1,4 @@
-
+import Grafico1 from './Grafico1';
 
 import React from 'react';
 
@@ -23,6 +23,7 @@ const ListagemItens = () => {
                     </div>
                 ))}
             </div>
+            <Grafico1></Grafico1>
         </div>
     );
 };
