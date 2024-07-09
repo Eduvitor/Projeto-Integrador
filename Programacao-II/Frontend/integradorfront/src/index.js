@@ -18,7 +18,7 @@ import ProtectedRoute from './Components/PrivateRoute';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import ListagemMedicamentos from './Components/ListagemMedicamentos'
 
 
 
@@ -46,8 +46,8 @@ const router = createBrowserRouter([
     element: <TelaLogin></TelaLogin>
   },
   {
-    path: "/Teste",
-    element: <ListagemItens></ListagemItens>
+    path: "/ListagemMedicamentos",
+    element: <ProtectedRoute element={ListagemMedicamentos}></ProtectedRoute>
   },
   {
     path: "/ListagemAnimais",

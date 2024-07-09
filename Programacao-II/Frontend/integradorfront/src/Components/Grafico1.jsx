@@ -31,7 +31,7 @@ function Grafico1(params) {
   }, []);
 
   return (
-    <div className="flex max-w-80 px-4 py-4 font-semibold text-xs">
+    <div className="flex px-4 py-4 font-semibold text-xs max-w-full">
       <Chart
         width={"100%"}
         height={"400px"}

@@ -217,7 +217,7 @@ function CadastroAnimal() {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl"
                 id="nome4"
                 type="text"
-                placeholder="Ex: Consumo"
+                placeholder="Ex: 643902"
                 {...register("animal_brinco")}
               />
             </div>
@@ -234,7 +234,7 @@ function CadastroAnimal() {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm md:text-xl"
               id="nome1"
               type="text"
-              placeholder="Ex: Em emgorda"
+              placeholder="Ex: Em engorda"
               {...register("prodstate")}
             />
           </div>

@@ -286,11 +286,13 @@ app.get("/IdAndNameMEDS", requireJWTAuth, async (req, res) => {
 
 //Rota para pegar os medicamentos usados
 
-app.get("/MedUsed:aid", requireJWTAuth,  async (req, res) => {
+app.get("/MedUsed:aid",  async (req, res) => {
   try {
+    const id = req.params.aid;
     const dadosUsed = await db.many(
       "SELECT * FROM tmedused where aid = $1;"
     );
+    console.log(dadosUsed);
     res.json(dadosUsed).status(200);
   } catch (error) {
     console.log("An error has ocurred", error);
@@ -298,6 +300,22 @@ app.get("/MedUsed:aid", requireJWTAuth,  async (req, res) => {
   }
 });
 
+
+//Vai trazer todos os dados desde de medicamento até a categoria
+app.get("/Medandcats:id", async (req, res) => {
+  try {
+    const idcat = req.params.id;
+    console.log(idcat);
+    const dadosMed = await db.many(
+      "SELECT * FROM tmedicine t JOIN tcategorymed tc ON t.catid=tc.catid WHERE t.catid=$1", [idcat]
+    );
+    console.log(dadosMed);
+    res.status(200).json(dadosMed);
+  } catch (error) {
+    console.log("An error has ocurred!", error);
+    res.status(400).json({message: "Não foi possivel coletar os dados!"});
+  }
+});
 
 //Rota para pegar as categorias
 
@@ -345,10 +363,72 @@ app.get("/Grafico1", requireJWTAuth, async (req, res) => {
 
 
 //Rota para retornar os medicamentos cadastrados
-app.get("/Medicamentos", requireJWTAuth, (req, res) => {});
+app.get("/Medicamentos", requireJWTAuth, async (req, res) => {
+  try {
+    const dados = await db.many(
+      "SELECT * FROM tmedicine t JOIN tcategorymed cat ON t.catid=cat.catid;"
+    );
+    console.log(dados);
+    res.json(dados).status(200);
+  } catch (error) {
+    console.log("An error has ocurred:", error);
+    res.status(400);
+  }
+});
+
+app.delete("/Delmedicine:id", requireJWTAuth, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const isAssociated = await db.any(
+      "SELECT * FROM tmedused WHERE idmed=$1", [id]
+    );
+
+    if (isAssociated.length > 0) {
+      console.log("Está associado")
+      return res.status(400).json({message: "Não foi possivel excluir pois o medicamento está associado a um ou mais animais!"});
+    }
+    
+    await db.none("DELETE FROM tmedicine WHERE idmed = $1", [id]);
+    res.status(200).json({message: "Medicamento foi excluido com sucesso!"});
+  } catch (error) {
+    console.log("An error has ocurred:", error);
+    res.status(400).json({message: "Ocorreu um erro ao excluir o medicamento!"});
+  }
+});
+
+//Rota para atualizar os dados de um medicamento
+app.put("/Attmedicine:id", requireJWTAuth, async (req, res) => {
+  try {
+    const idmed = req.body.idmed;
+    const name_med = req.body.name_med;
+    const dose_kg = req.body.dose_kg;
+    const data_venc = req.body.venc_day;
+    const days_car = req.body.days_car;
+    const type_car = req.body.type_car;
+    const col_effect = req.body.col_effect;
+    console.log("nomenovo", name_med);
+    await db.none(
+      "UPDATE tmedicine SET name_med=$1, dose_kg=$2, venc_day=$3, days_car=$4, type_car=$5, col_effect=$6 WHERE idmed=$7", [name_med, dose_kg, data_venc, days_car, type_car, col_effect, idmed]
+    );
+    res.status(200).json({message: "Medicamento atualizado com sucesso!"});
+  } catch (error) {
+    console.log("An error has ocurred!", error);
+    res.status(500).json({message: "Não foi possivel atualizar os dados do medicamento"});
+  }
+});
 
 //Rota para retornar os eventos cadastrados
-app.get("/Eventos", requireJWTAuth, (req, res) => {});
+app.get("/Eventos", requireJWTAuth, async (req, res) => {
+  try {
+    const eventoProx = await db.many(
+      "SELECT event_id, ename, edate, elocal FROM tevent WHERE edate >= CURRENT_DATE ORDER BY edate ASC LIMIT 2;"
+    );
+    res.json(eventoProx).status(200);
+  } catch (error) {
+    console.log("An error has ocurred:", error);
+    res.status(400).json({message: "Não foi possivel obter os eventos"});
+  }
+});
 
 //Rota para pegar os dados de peso dos animais
 app.get("/Mediapesos", requireJWTAuth, (req, res) => {});
