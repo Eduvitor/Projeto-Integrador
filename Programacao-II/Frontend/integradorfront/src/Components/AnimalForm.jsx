@@ -29,7 +29,7 @@ const AnimalForm = ({ animalId, onClose }) => {
   };
 
   const fetchMedicamentos = async () => {
-    const response = await axios.get("http://localhost:3301/IdAndNa", {
+    const response = await axios.get("http://localhost:3301/IdAndNameMEDS", {
       headers: {
         Authorization: `bearer ${token}`,
       },

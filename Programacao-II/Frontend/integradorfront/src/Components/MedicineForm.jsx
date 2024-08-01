@@ -40,7 +40,7 @@ const MedicamentoForm = ({ medicamentoId, onClose }) => {
       console.log("DADOS COLETADOS:", data);
       try {
         const response = await axios.put(
-          `http://localhost:3301/Attmedicine${mid}`,
+          `http://localhost:3301/Attmedicine${medicamentoId}`,
           {
             ...data,
           }, {

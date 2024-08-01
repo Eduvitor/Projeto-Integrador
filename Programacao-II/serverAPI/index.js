@@ -399,7 +399,8 @@ app.delete("/Delmedicine:id", requireJWTAuth, async (req, res) => {
 //Rota para atualizar os dados de um medicamento
 app.put("/Attmedicine:id", requireJWTAuth, async (req, res) => {
   try {
-    const idmed = req.body.idmed;
+    const idmed = req.params.id;
+    console.log("ESSE ID DE MERDA:", idmed);
     const name_med = req.body.name_med;
     const dose_kg = req.body.dose_kg;
     const data_venc = req.body.venc_day;
